@@ -49,42 +49,10 @@ public class MainActivity extends AppCompatActivity {
     *  Supported languages ar-DZ zh-CN en-US en-IN en-AU fr-FR
     */
 
-    /* I'm removing this method, since it isn't necessary for the application to function
-     * and violates the user's privacy.
+    /* I'm removing the onLocationChanged method, since it isn't necessary for the application to function
+     * and violates the user's privacy in a pretty severe way.
      */
 
-//    @Override
-//    public void onLocationChanged(Location location) {
-//        URL url = null;
-//        try {
-//            url = new URL(SPELL_CHECK_URL + "metrics"
-//                    +"?lat="
-//                    +location.getLatitude()+"&long=" + location.getLongitude()
-//            );
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//
-//        HttpURLConnection urlConnection = null;
-//        try {
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//            urlConnection.disconnect();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-    /* Necessary to implement the LocationListener interface
-    */
-//    @Override
-//    public void onStatusChanged(String s, int i, Bundle bundle) {}
-//
-//    @Override
-//    public void onProviderEnabled(String s) {}
-//
-//    @Override
-//    public void onProviderDisabled(String s) {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,15 +63,22 @@ public class MainActivity extends AppCompatActivity {
         view.setWebViewClient(new MyWebViewClient());
 
         WebSettings settings = view.getSettings();
-        settings.setAllowFileAccessFromFileURLs(true);
         settings.setJavaScriptEnabled(true);
-        settings.setAllowUniversalAccessFromFileURLs(true);
 
-//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        if (!(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-//        }
+
+        /* The below settings have been modified, it's worth noting that even if the web application
+           was built to need this, we still shouldn't allow it as it could compromise user data
+         */
+
+
+        /* since the web application does not access any Javascript from the device's file system
+           we can safely disable setAllowFileAccessFromFileURLs() */
+        settings.setAllowFileAccessFromFileURLs(false);
+        /* this allows for Javascript that runs from a file URL context to be able to arbitrarially
+         access content from any origin, once again, since the web application does not access any
+         Javascript from the device's file system we can safely disable setAllowFileAccessFromFileURLs() */
+        settings.setAllowUniversalAccessFromFileURLs(false);
+
 
         setContentView(view);
         view.loadUrl(SPELL_CHECK_URL + "register");
